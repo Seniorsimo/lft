@@ -181,7 +181,9 @@ public class NFA {
         HashSet out = new HashSet<>();
         for (int i : s) {
             HashSet temp = transitions.get(new Move(i, ch));
-            if(temp!=null) out.addAll(temp);
+            if (temp != null) {
+                out.addAll(temp);
+            }
         }
         return out;
     }
@@ -297,7 +299,7 @@ public class NFA {
         NFA out = new NFA(n + 1);
         out.addMove(0, '1', 0);
         out.addMove(0, '0', 0);
-        out.addMove(0, EPSILON, 0);
+        //out.addMove(0, EPSILON, 0);
         int i = 0;
 
         if (n != 0) {
@@ -306,13 +308,35 @@ public class NFA {
             while (i < n - 1) {
                 out.addMove(i, '1', i + 1);
                 out.addMove(i, '0', i + 1);
-                out.addMove(i, EPSILON, i);
+                //out.addMove(i, EPSILON, i);
                 i++;
             }
-            out.addMove(i, EPSILON, i);
+            //out.addMove(i, EPSILON, i);
         }
 
         out.addFinalState(i);
         return out;
+    }
+
+    public void toDOT(String name) {
+        String out = "digraph " + name + "{\n";
+
+        out += "rankdir=LR;\n";
+        out += "node [shape = doublecircle];\n";
+
+        for (Integer i : finalStates) {
+            out += "q" + i + ";\n";
+        }
+
+        out += "node [shape = circle];\n";
+
+        for (Move m : transitions.keySet()) {
+            for (int i : transitions.get(m)) {
+                out += "q" + m.start + " -> q" + i + " [ label = \"" + m.ch + "\" ];\n";
+            }
+        }
+
+        out += "}";
+        System.out.println(out);
     }
 }
