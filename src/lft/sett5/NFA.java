@@ -147,7 +147,7 @@ public class NFA {
      * @return L'alfabeto dell'automa.
      */
     public HashSet<Character> alphabet() {
-        HashSet out = new HashSet<Character>();
+        HashSet out = new HashSet<>();
         for (Move m : transitions.keySet()) {
             out.add(m.ch);
         }
@@ -178,9 +178,10 @@ public class NFA {
      * puo` essere vuoto.
      */
     public HashSet<Integer> move(HashSet<Integer> s, char ch) {
-        HashSet out = new HashSet<Integer>();
+        HashSet out = new HashSet<>();
         for (int i : s) {
-            out.addAll(transitions.get(new Move(i, ch)));
+            HashSet temp = transitions.get(new Move(i, ch));
+            if(temp!=null) out.addAll(temp);
         }
         return out;
     }
@@ -204,10 +205,12 @@ public class NFA {
             for (int i = 0; i < r.length; i++) {
                 if (r[i]) {
                     for (Move m : transitions.keySet()) {
-                        if (m.start==i&&m.ch == EPSILON) {
+                        if (m.start == i && m.ch == EPSILON) {
                             for (int j : transitions.get(m)) {
-                                r[j] = true;
-                                modificato = true;
+                                if (!r[j]) {
+                                    r[j] = true;
+                                    modificato = true;
+                                }
                             }
                         }
                     }
@@ -215,9 +218,11 @@ public class NFA {
             }
         } while (modificato);
 
-        HashSet out = new HashSet<Integer>();
+        HashSet out = new HashSet<>();
         for (int i = 0; i < r.length; i++) {
-            if(r[i]) out.add(i);
+            if (r[i]) {
+                out.add(i);
+            }
         }
         return out;
     }
@@ -232,7 +237,7 @@ public class NFA {
      * @see #epsilonClosure
      */
     public HashSet<Integer> epsilonClosure(int p) {
-        HashSet a = new HashSet();
+        HashSet a = new HashSet<>();
         a.add(p);
         return epsilonClosure(a);
     }
@@ -286,5 +291,28 @@ public class NFA {
         }
 
         return dfa;
+    }
+
+    public static NFA nth(int n) {
+        NFA out = new NFA(n + 1);
+        out.addMove(0, '1', 0);
+        out.addMove(0, '0', 0);
+        out.addMove(0, EPSILON, 0);
+        int i = 0;
+
+        if (n != 0) {
+            out.addMove(0, '1', 1);
+            i++;
+            while (i < n - 1) {
+                out.addMove(i, '1', i + 1);
+                out.addMove(i, '0', i + 1);
+                out.addMove(i, EPSILON, i);
+                i++;
+            }
+            out.addMove(i, EPSILON, i);
+        }
+
+        out.addFinalState(i);
+        return out;
     }
 }
