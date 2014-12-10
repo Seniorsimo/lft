@@ -202,8 +202,9 @@ public class NFA {
             r[i] = s.contains(i);
         }
 
-        boolean modificato = false;
+        boolean modificato;
         do {
+            modificato = false;
             for (int i = 0; i < r.length; i++) {
                 if (r[i]) {
                     for (Move m : transitions.keySet()) {
@@ -261,12 +262,10 @@ public class NFA {
         DFA dfa = new DFA(0);                            // il DFA
         Stack<Integer> newStates = new Stack<Integer>(); // nuovi stati del DFA
         HashSet<Character> alphabet = alphabet();
-
         int q0 = dfa.newState();               // stato iniziale del DFA
         indexOfSet.put(epsilonClosure(0), q0); // stati dell'NFA corrisp. a q0
         setOfIndex.put(q0, epsilonClosure(0));
         newStates.push(q0);                    // nuovo stato da esplorare
-
         while (!newStates.empty()) { // finche' ci sono nuovi stati da visitare
             final int p = newStates.pop(); // ne considero uno e lo visito
             final HashSet<Integer> pset = setOfIndex.get(p); // stati del NFA corrisp.
@@ -332,7 +331,7 @@ public class NFA {
 
         for (Move m : transitions.keySet()) {
             for (int i : transitions.get(m)) {
-                out += "q" + m.start + " -> q" + i + " [ label = \"" + m.ch + "\" ];\n";
+                out += "q" + m.start + " -> q" + i + " [ label = \"" + (m.ch!=NFA.EPSILON?m.ch:"") + "\" ];\n";
             }
         }
 

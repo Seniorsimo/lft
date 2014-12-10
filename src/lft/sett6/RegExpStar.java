@@ -22,6 +22,7 @@ public class RegExpStar implements RegExp{
 	final int n = a.append(e1.compile());
 	a.addMove(0, NFA.EPSILON, n);
         a.addMove(n + 1, NFA.EPSILON, n);
+        a.addMove(n, NFA.EPSILON, n + 1);
 	a.addMove(n + 1, NFA.EPSILON, 1);
 	a.addFinalState(1);
 	return a;
