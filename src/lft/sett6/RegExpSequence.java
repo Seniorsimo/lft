@@ -5,10 +5,7 @@
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
+
 public class RegExpSequence implements RegExp {
     private RegExp e1;
     private RegExp e2;

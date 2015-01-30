@@ -37,6 +37,7 @@ public class esercizio5 {
         //scan
 
         dfa.toDOT("prova");
+        //dfa.toDOTMod("provamod");
 
     }
 }

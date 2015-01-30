@@ -5,12 +5,10 @@
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
-public class RegExpEmpty implements RegExp{
 
+public class RegExpEmpty implements RegExp{
+  
+    
     RegExpEmpty(){
         
     }

@@ -7,10 +7,6 @@ package lft.sett3;
 
 import java.util.HashSet;
 
-/**
- *
- * @author simone
- */
 public class esercizio1 {
     public static void main(String[] args){
         DFA dfa = new DFA(5);
@@ -35,14 +31,19 @@ public class esercizio1 {
         dfa.setMove(3, '1', 3);
         
         
-        //scan
+//scan
 
-//        HashSet temp = dfa.reach(2);
+        DFA Edfa = new DFA(0);
+        dfa.toDOT("dfa");
+//        HashSet temp = dfa.reach(0);
 //        for(Object i : temp){
 //            System.out.println((Integer)i + "");
 //        }
+        System.out.println(dfa.reach(0));
+        System.out.println(dfa.empty());
+        System.out.println(Edfa.empty());
+        System.out.println(dfa.sink());
         
-        System.out.println(dfa.reachWithExaple(0));
         
 
     }

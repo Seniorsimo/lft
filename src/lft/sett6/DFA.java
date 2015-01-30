@@ -2,6 +2,7 @@ package lft.sett6;
 
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * Un oggetto della classe DFA rappresenta un automa a stati finiti
@@ -140,6 +141,7 @@ public class DFA {
         Move move = new Move(p, ch);
         if (transitions.containsKey(move)) {
             return transitions.get(move);
+           
         } else {
             return -1;
         }
@@ -164,8 +166,12 @@ public class DFA {
 
     /**
      * Restituisce true nel caso l'automa sia completo
+     *
+     * @return true se da ogni stato esce una transizione con ogni lettera
+     * dell'alfabeto
      */
     public boolean complete() {
+        // DA IMPLEMENTARE 2.4
         boolean complete = true;
         HashSet alph = alphabet();
         int i = 0;
@@ -182,11 +188,14 @@ public class DFA {
 
     /**
      * Stampa una rappresentazione testuale dell'automa da visualizzare con
-     * <a href="http://www.graphviz.org">GraphViz</a>.
+     * <a href="http://graphviz-dev.appspot.com/">GraphViz</a> o
+     * <a href="http://sandbox.kidstrythisathome.com/erdos/">visualizzatore
+     * graphviz</a>.
      *
      * @param name Nome dell'automa.
      */
     public void toDOT(String name) {
+        // DA IMPLEMENTARE 2.5
         String out = "digraph " + name + "{\n";
 
         out += "rankdir=LR;\n";
@@ -213,11 +222,57 @@ public class DFA {
      * @param name Nome della classe da generare.
      */
     public void toJava(String name) {
-        // DA IMPLEMENTARE
+        // DA IMPLEMENTARE 2.6
+        boolean init = false;
+        String out = "public class " + name + "{ \n\n";
+
+        out += "        public static boolean Scan (String s) { \n\n"
+                + "            int state = 0; \n"
+                + "            int i = 0; \n\n";
+
+        out += "            while (state >=0 && i<s.length()){ \n"
+                + "                final char ch = s.charAt(i++); \n\n"
+                + "                switch (state) { \n";
+
+        for (int j = 0; j < numberOfStates; j++) {
+            out += "                    case " + j + ":\n";
+            for (Move m : transitions.keySet()) {
+                if (m.start == j && init == false) {
+                    out += "                    if (ch == " + m.ch + ")\n "
+                            + "                        state = " + transitions.get(m) + ";\n";
+                    init = true;
+                } else if (m.start == j && init == true) {
+                    out += "                    else if (ch == " + m.ch + ")\n "
+                            + "                        state = " + transitions.get(m) + ";\n";
+                }
+            }
+            out += "\n                    else state = -1;\n"
+                    + "                    break; \n\n";
+            init = false;
+        }
+        out += "                }\n             }\n";
+
+        for (Integer i : finalStates) {
+            out += "        return state == " + i + "; \n    }\n\n";
+        }
+
+        out += "     public static void main(String [] args){\n"
+                + "         System.out.println(Scan(args[0]) ? OK' : 'NOPE');\n"
+                + "     }\n"
+                + "}";
+
+        System.out.println(out);
     }
 
+    /**
+     * Controlla se lo stato è raggiungibile dallo stato iniziale
+     *
+     * @param input stato di partenza
+     * @return <code>HashSet<Integer> result </code> insieme degli stati
+     * raggiunti da input
+     */
     public HashSet<Integer> reach(int input) {
-
+        // DA IMPLEMENTARE 3.1
         boolean[] r = new boolean[numberOfStates];
         for (boolean b : r) {
             b = false;
@@ -321,71 +376,71 @@ public class DFA {
         return out;
     }
 
-    public DFA minimize() {
 
-        boolean[][] eq = new boolean[numberOfStates][numberOfStates];
+    public DFA minimize() {
+        boolean bool = true;
+        HashSet<Character> alfabeto = this.alphabet();
+        Iterator<Character> itAlfabeto;
+
+        boolean eq[][] = new boolean[numberOfStates][numberOfStates];
         for (int i = 0; i < numberOfStates; i++) {
             for (int j = 0; j < numberOfStates; j++) {
-                eq[i][j] = (finalStates.contains(i) && finalStates.contains(j)) || (!finalStates.contains(i) && !finalStates.contains(j));
+                if ((finalState(i) && finalState(j)) || (!finalState(i) && !finalState(j))){
+                    eq[i][j] = true;
+                } else {
+                    eq[i][j] = false;
+                }
             }
-        }
-        char[] alf = new char[alphabet().size()];
-
-        boolean modificato;
-        do {
-            modificato = false;
-
+        } // 3/4- ricerca stati equivalenti // se due stati indistinguibili i e j --> tramite ch --> raggiungono due stati distinguibili --> i e j sono distinguibili 
+        while (bool) {
+            bool = false;
             for (int i = 0; i < numberOfStates; i++) {
                 for (int j = 0; j < numberOfStates; j++) {
-
-                    boolean distinguibili = true;
-                    int index = 0;
-
-                    for (Object o : alphabet()) {
-                        alf[index] = (Character) o;
-                        index++;
-                    }
-
-                    index = 0;
-                    while (distinguibili && index < alf.length) {
-                        if (eq[i][j] && !eq[move(i, alf[index])][move(j, alf[index])]) {
-                            eq[i][j] = false;
-                            modificato = true;
-                        }
-                        index++;
+                    itAlfabeto = alfabeto.iterator();
+                
+                while (itAlfabeto.hasNext()) {
+                    char ch = itAlfabeto.next();
+                    
+                    if (eq[i][j] == true && eq[move(i, ch)][move(j, ch)] == false) {
+                        eq[i][j] = false;
+                        bool = true;
                     }
                 }
             }
-
-        } while (modificato);
-
-        int[] m = new int[numberOfStates];
-        int k = 0;
-        for (int i = 0; i < numberOfStates; i++) {
-            m[i] = i;
-            for (int j = 0; j < numberOfStates; j++) {
-                if (eq[i][j] && j < i) {
-                    m[i] = j;
-                }
-            }
-            if (m[i] > k) {
-                k = m[i];
-            }
         }
-
-        DFA out = new DFA(k + 1);
-        for (Move move : transitions.keySet()) {
-            out.setMove(m[move.start], move.ch, m[transitions.get(move)]);
-        }
-        for (int i = 0; i < numberOfStates; i++) {
-            if (finalStates.contains(i)) {
-                out.addFinalState(m[i]);
-            }
-        }
-        return out;
     }
-
-    public boolean equivalentTo(DFA target) {
+    int[] m = new int[numberOfStates];
+    int max = -1;
+    for(int i = 0;i< numberOfStates ;i++){ 
+    for (int j = 0; j < numberOfStates; j++) {
+            if (eq[i][j] == true) {
+                m[i] = j;
+                if (j > max) {
+                    max = j;
+                }
+                break;
+            }
+        }
+    }
+    DFA b = new DFA(max + 1);
+    Move move;
+    for(int i = 0;i< numberOfStates;i++){ 
+        itAlfabeto = alfabeto.iterator();
+        while (itAlfabeto.hasNext()) {
+            char ch = itAlfabeto.next();
+            move = new Move(i, ch);
+            if (transitions.get(move) != null) {
+                b.setMove(m[i], ch, m[transitions.get(move)]);
+                if (this.finalState(i)) {
+                    b.addFinalState(m[i]);
+                }
+            }
+        }
+    }
+    return b ;
+}
+ 
+    public boolean equivalentTo(DFA target) { //SBAGLIATO BASTA VERIFICARE L'EQUIVALENZA DEI DUE STATI INIZIALI
         DFA a = this.minimize();
         DFA b = target.minimize();
 

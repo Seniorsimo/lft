@@ -7,11 +7,8 @@ package lft.sett1;
 import java.util.Scanner;
 import static lft.sett1.esercizio1.scan;
 
-/**
- *
- * @author Simone
- */
-public class esercizio5 {
+
+public class esercizio5 { //binario %3==0
 
     public static boolean scan(String s) {
         int state = 0;

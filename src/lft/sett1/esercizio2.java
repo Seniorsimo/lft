@@ -7,10 +7,7 @@ package lft.sett1;
 import java.util.Scanner;
 import static lft.sett1.esercizio1.scan;
 
-/**
- *
- * @author Simone
- */
+
 public class esercizio2 {
 
     public static boolean scan(String s) {

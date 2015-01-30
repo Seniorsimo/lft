@@ -35,5 +35,6 @@ public class esercizio2 {
         out.toDOT("out");
         
         System.out.println(in.equivalentTo(out));
+
     }
 }

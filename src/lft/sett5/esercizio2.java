@@ -6,8 +6,9 @@
 package lft.sett5;
 
 /**
- *
- * @author simone
+ * DFA: trasformando in dfa il nfa viene ridotto di stati
+ * MIN: minimizzando arrivo sempre al minimo numero di stati
+ * @author anna
  */
 public class esercizio2 {
     public static void main(String[] args){

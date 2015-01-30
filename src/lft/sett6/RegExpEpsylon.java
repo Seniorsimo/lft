@@ -5,10 +5,7 @@
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
+
 public class RegExpEpsylon implements RegExp {
 
     RegExpEpsylon(){

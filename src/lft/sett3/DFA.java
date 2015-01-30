@@ -141,7 +141,7 @@ public class DFA
      *         <code>false</code> altrimenti.
      */
     public boolean scan(String s) {
-	// DA IMPLEMENTARE
+	// DA IMPLEMENTARE 2.2
         int index = 0;
         int state = 0;
         while(state>=0&&index<s.length()){
@@ -150,10 +150,13 @@ public class DFA
         return finalStates.contains(state);
     }
     
-    /**
+     /**
      * Restituisce true nel caso l'automa sia completo
+     * @return true se da ogni stato esce una transizione con ogni lettera 
+     * dell'alfabeto
      */
     public boolean complete(){
+        // DA IMPLEMENTARE 2.4
         boolean complete = true;
         HashSet alph = alphabet();
         int i=0;
@@ -168,10 +171,11 @@ public class DFA
 
     /**
      * Stampa una rappresentazione testuale dell'automa da
-     * visualizzare con <a href="http://www.graphviz.org">GraphViz</a>.
+     * visualizzare con <a href="http://graphviz-dev.appspot.com/">GraphViz</a>.
      * @param name Nome dell'automa.
      */
     public void toDOT(String name) {
+        // DA IMPLEMENTARE 2.5
 	String out = "digraph " + name + "{\n";
         
         out += "rankdir=LR;\n";
@@ -197,14 +201,62 @@ public class DFA
      * @param name Nome della classe da generare.
      */
     public void toJava(String name) {
-	// DA IMPLEMENTARE
+	// DA IMPLEMENTARE 2.6
+        boolean init= false;
+        String out = "public class " + name + "{ \n\n";
+        
+        out += "        public static boolean Scan (String s) { \n\n" +
+               "            int state = 0; \n" +
+               "            int i = 0; \n\n";
+        
+        out += "            while (state >=0 && i<s.length()){ \n" +
+               "                final char ch = s.charAt(i++); \n\n" +
+               "                switch (state) { \n";
+        
+        for (int j=0; j< numberOfStates; j++){
+            out += "                    case "+ j+ ":\n";
+            for(Move m :transitions.keySet()){
+                if (m.start == j && init == false){
+                    out += "                    if (ch == " +  m.ch + ")\n "+ 
+                           "                        state = " + transitions.get(m) + ";\n";
+                    init = true;
+                } 
+                
+                else if (m.start == j && init == true){
+                    out += "                    else if (ch == " +  m.ch + ")\n "+ 
+                           "                        state = " + transitions.get(m) + ";\n";
+                }
+            }
+            out += "\n                    else state = -1;\n"+
+                   "                    break; \n\n";
+            init = false;
+            }
+        out += "                }\n             }\n";
+        
+        for(Integer i : finalStates){
+            out += "        return state == "+ i + "; \n    }\n\n";
+        }
+        
+        out +="     public static void main(String [] args){\n" +
+              "         System.out.println(Scan(args[0]) ? \"OK\" : \"NOPE\");\n"+
+              "     }\n"+
+              "}";
+        
+        System.out.println(out);
+    
     }
     
+    /**
+     * Controlla se lo stato è raggiungibile dallo stato iniziale
+     * @param input stato di partenza
+     * @return <code>HashSet<Integer> result </code> insieme degli stati raggiunti da input
+     */
     public HashSet<Integer> reach(int input){
-        
+        // DA IMPLEMENTARE 3.1
+        if (numberOfStates==0) return null; //GESTISCE IL DFA VUOTO
         boolean[] r = new boolean[numberOfStates];
-        for(boolean b:r) b = false;
-        r[input] = true;
+        for(boolean b:r) b = false; //tutto a false
+        r[input] = true; //lo stato di partenza è true
         
         
         int i = 0;
@@ -213,19 +265,19 @@ public class DFA
                 /*i < numberOfStates*/
         do{
             
-            if(r[i]){
-                for(Move m:transitions.keySet()){
-                    if(m.start == i && !r[transitions.get(m)]){
-                        r[transitions.get(m)] = true;
+            if(r[i]){//se r[i] è raggiungibile
+                for(Move m:transitions.keySet()){ //cicla tutte le mosse possibili
+                    if(m.start == i && !r[transitions.get(m)]){ //prendi quelle che interessano
+                        r[transitions.get(m)] = true; //se non era ancora a true mettilo a true
                         modificato = true;
                         
                     }
                 }
             }
             i++;
-            if(i==numberOfStates&&modificato==true){
-                modificato = false;
-                i = 0;
+            if(i==numberOfStates&&modificato==true){ //se sono alla fine ma ho fatto modifiche
+                modificato = false;//continua a ciclare 
+                i = 0;//resetta
             }
         }
         while(i<numberOfStates);
@@ -241,10 +293,46 @@ public class DFA
         return result;
     }
     
-    public HashSet<StateWithExample> reachWithExaple(int input){
-        
+    /**
+     * Controlla se il DFA è vuoto
+     * 
+     * @return true se reach(start) non contiene stati finali
+     */
+    public boolean empty(){
+        //DA IMPLEMENTARE 3.1
+        HashSet temp = reach(0);
+        if (temp== null)
+            return true;
+        return false;
+    }
+    
+    
+    /**
+     * Controlla se il DFA è pozzo
+     * uno stato è pozzo se da esso non escono transizioni verso altri stati
+     * @return l'insieme stati pozzo
+     */
+    public HashSet<Integer> sink() {
+        //DA IMPLEMENTARE 3.1
+        HashSet<Integer> out = new HashSet<>();
+        for (int i = 0; i < numberOfStates; i++) {
+            if (!finalStates.contains(i) && reach(i).size() == 1) { //se non è finale ma raggiunge solo sè stesso
+                out.add(i);//allora è pozzo
+            }
+        }
+        return out;
+    }
+    
+    /**
+     * Controlla se lo stato è raggiungibile dallo stato iniziale e si memorizza 
+     * una striga usata per arrivarci
+     * @param input stato di partenza
+     * @return <code>HashSet<Integer> result </code> insieme degli stati raggiunti da input
+     */
+    public HashSet<StateWithExample> samples(int input){
+        //DA IMPLEMENTARE 3.2
         boolean[] r = new boolean[numberOfStates];
-        String[] s = new String[numberOfStates];
+        String[] s = new String[numberOfStates];//stringa di supporto con i caratteri
         for(int i=0; i<numberOfStates; i++){
             r[i] = false;
             s[i] = "";
@@ -260,9 +348,9 @@ public class DFA
             
             if(r[i]){
                 for(Move m:transitions.keySet()){
-                    if(m.start == i && !r[transitions.get(m)]){
+                    if(m.start == i && !r[transitions.get(m)]){//ci interessa e non è ancora stato inizializzato
                         r[transitions.get(m)] = true;
-                        s[transitions.get(m)] = s[i] + " " + m.ch;
+                        s[transitions.get(m)] = s[i] + " " + m.ch; //aggiungo il carattere alla stringa dello stato
                         modificato = true;
                         
                     }
@@ -279,7 +367,7 @@ public class DFA
         HashSet<StateWithExample> result = new HashSet<>();
         for(int ii=0; ii<r.length; ii++){
             if(r[ii]){
-                
+                //creo un insieme di int(stato) e string associata
                 result.add(new StateWithExample(ii, s[ii]));
             }
         }
@@ -287,22 +375,12 @@ public class DFA
         return result;
     }
     
-    public boolean empty(){
-        HashSet temp = reach(0);
-        for(Object i:temp){
-            if(finalStates.contains((Integer)i)) return false;
-        }
-        return true;
-    }
-    
-    public HashSet<Integer> sink(){
-        HashSet<Integer> out = new HashSet<>();
-        for(int i=0; i<numberOfStates; i++){
-            if(!finalStates.contains(i)&&reach(i).size()==1) out.add(i);
-        }
-        return out;
-    }
-
+    /**
+     * Classe di supporto a Samples
+     * formata da 
+     * int -> stato 
+     * example->Stringa che consente di raggiungere lo stato dallo stato iniziale
+     */
     private static class StateWithExample {
 
         private int state;

@@ -1,14 +1,11 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Regexp Chioce serve a rappresentare la scelta '+'
+ * 
+ * 
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
+
 public class RegExpChoice implements RegExp{
     private RegExp e1;
     private RegExp e2;

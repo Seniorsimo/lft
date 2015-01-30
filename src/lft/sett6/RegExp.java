@@ -5,10 +5,7 @@
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
+
 interface RegExp {
     NFA compile();
 }

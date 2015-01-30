@@ -2,6 +2,7 @@ package lft.sett5;
 
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Stack;
 
 /**
@@ -111,6 +112,7 @@ public class NFA {
      * sono validi, <code>false</code> altrimenti.
      */
     public boolean addMove(int p, char ch, int q) {
+        //DA IMPLEMENTARE 5.1
         if (validState(p) && validState(q)) {
             Move m = new Move(p, ch);
             if (!transitions.containsKey(m)) {
@@ -147,6 +149,7 @@ public class NFA {
      * @return L'alfabeto dell'automa.
      */
     public HashSet<Character> alphabet() {
+        //DA IMPLEMENTARE 5.1
         HashSet out = new HashSet<>();
         for (Move m : transitions.keySet()) {
             out.add(m.ch);
@@ -166,6 +169,7 @@ public class NFA {
      * puo` essere vuoto.
      */
     public HashSet<Integer> move(int p, char ch) {
+        //DA IMPLEMENTARE 5.1
         return transitions.get(new Move(p, ch));
     }
 
@@ -181,121 +185,128 @@ public class NFA {
         HashSet out = new HashSet<>();
         for (int i : s) {
             HashSet temp = transitions.get(new Move(i, ch));
-            if (temp != null) {
+            
+                if (transitions.containsKey(temp))
                 out.addAll(temp);
-            }
+            
         }
         return out;
     }
-
+    
     /**
      * Calcola la epsilon chiusura di un insieme di stati dell'automa.
-     *
-     * @param s Insieme di stati di cui calcolare l'epsilon chiusura.
+     * @param s  Insieme di stati di cui calcolare l'epsilon chiusura.
      * @return Insieme di stati raggiungibili da quelli contenuti in
-     * <code>s</code> per mezzo di zero o piu` epsilon transizioni.
+     *         <code>s</code> per mezzo di zero o piu` epsilon
+     *         transizioni.
      */
     public HashSet<Integer> epsilonClosure(HashSet<Integer> s) {
-        boolean[] r = new boolean[numberOfStates];
-
-        for (int i = 0; i < r.length; i++) {
-            r[i] = s.contains(i);
-        }
-
-        boolean modificato = false;
-        do {
-            for (int i = 0; i < r.length; i++) {
-                if (r[i]) {
-                    for (Move m : transitions.keySet()) {
-                        if (m.start == i && m.ch == EPSILON) {
-                            for (int j : transitions.get(m)) {
-                                if (!r[j]) {
-                                    r[j] = true;
-                                    modificato = true;
-                                }
-                            }
+	HashSet<Integer> qset = new HashSet<Integer>();
+	for (int p : s)//per tutti gli int dell'hashset
+	    qset.addAll(epsilonClosure(p));//fanne l'epsilon-c individuale e poi metti tutti gli hashset risultato insieme
+	return qset;
+        
+    }
+    
+    /**
+     * Calcola la epsilon chiusura di uno stato dell'automa. E` un
+     * caso specifico del metodo precedente.
+     * @param p  Insieme di cui calcolare l'epsilon chiusura.
+     * @return Insieme di stati raggiungibili da <code>p</code> per
+     *         mezzo di zero o piu` epsilon transizioni.
+     * @see #epsilonClosure
+     */    
+    public HashSet<Integer> epsilonClosure(int p) {
+	// IMPLEMENTARE 5.2
+        HashSet<Integer> closure = new HashSet<Integer>();
+        boolean[] r = new boolean[this.numberOfStates];
+        
+        for(int i = 0; i < this.numberOfStates; i++)
+            r[i] = false;
+        r[p] = true; //per ora solo lo stato stesso è raggiunto con eps
+        closure.add(p);
+        
+        Move move;
+        boolean bool = true;
+        while(bool){
+            bool = false;
+            for(int i = 0; i < this.numberOfStates; i++){ //tutti gli stati
+                move = new Move(i, EPSILON); //tutte le mosse epsilon con i
+                if(r[i] == true && this.transitions.get(move) != null){//se è e.closed e ha e-transizioni
+                    // insieme di stati raggiunti con la mossa (statoI - epsilon)
+                    HashSet<Integer> j = this.transitions.get(move);
+                    Iterator<Integer> it = j.iterator();
+                    // scorro tutte le destinazioni
+                    while(it.hasNext()){ //insieme di tutte le e.trans dallo stato
+                        int state = it.next();
+                        if(!closure.contains(state)){//se closure non ha ancora lo stato 
+                            r[state] = true; //segno che lo aggiungo e che è e.closed per poterlo esplorare al prossimo giro
+                            closure.add(state); //lo aggiungo all'hashsetdei raggiunti con epsilon
+                            bool = true; //ho fatto qualcosa
                         }
                     }
                 }
             }
-        } while (modificato);
-
-        HashSet out = new HashSet<>();
-        for (int i = 0; i < r.length; i++) {
-            if (r[i]) {
-                out.add(i);
-            }
         }
-        return out;
+        return closure;
     }
-
-    /**
-     * Calcola la epsilon chiusura di uno stato dell'automa. E` un caso
-     * specifico del metodo precedente.
-     *
-     * @param p Insieme di cui calcolare l'epsilon chiusura.
-     * @return Insieme di stati raggiungibili da <code>p</code> per mezzo di
-     * zero o piu` epsilon transizioni.
-     * @see #epsilonClosure
-     */
-    public HashSet<Integer> epsilonClosure(int p) {
-        HashSet a = new HashSet<>();
-        a.add(p);
-        return epsilonClosure(a);
-    }
-
+    
     /**
      * Calcola l'automa a stati finiti deterministico equivalente.
      *
      * @return DFA equivalente.
      */
-    public DFA dfa() {
-        // la costruzione del DFA utilizza due tabelle hash per tenere
-        // traccia della corrispondenza (biunivoca) tra insiemi di
-        // stati del NFA e stati del DFA
-        HashMap<HashSet<Integer>, Integer> indexOfSet
-                = new HashMap<HashSet<Integer>, Integer>();    // NFA -> DFA
-        HashMap<Integer, HashSet<Integer>> setOfIndex
-                = new HashMap<Integer, HashSet<Integer>>();    // DFA -> NFA
+    public DFA dfa(){
+	// la costruzione del DFA utilizza due tabelle hash per tenere
+	// traccia della corrispondenza (biunivoca) tra insiemi di
+	// stati del NFA e stati del DFA
+    	HashMap<HashSet<Integer>, Integer> indexOfSet =
+	    new HashMap<HashSet<Integer>, Integer>();    // NFA -> DFA
+    	HashMap<Integer, HashSet<Integer>> setOfIndex =
+	    new HashMap<Integer, HashSet<Integer>>();    // DFA -> NFA
+	
+    	DFA dfa = new DFA(1);                            // il DFA
+    	Stack<Integer> newStates = new Stack<Integer>(); // nuovi stati del DFA
+    	HashSet<Character> alphabet = alphabet();
 
-        DFA dfa = new DFA(0);                            // il DFA
-        Stack<Integer> newStates = new Stack<Integer>(); // nuovi stati del DFA
-        HashSet<Character> alphabet = alphabet();
+    	indexOfSet.put(epsilonClosure(0), 0); // stati dell'NFA corrisp. a q0
+    	setOfIndex.put(0, epsilonClosure(0));
+    	newStates.push(0);                    // nuovo stato da esplorare
 
-        int q0 = dfa.newState();               // stato iniziale del DFA
-        indexOfSet.put(epsilonClosure(0), q0); // stati dell'NFA corrisp. a q0
-        setOfIndex.put(q0, epsilonClosure(0));
-        newStates.push(q0);                    // nuovo stato da esplorare
+    	while (!newStates.empty()) { // finche' ci sono nuovi stati da visitare
+    	    final int p = newStates.pop(); // ne considero uno e lo visito
+    	    final HashSet<Integer> pset = setOfIndex.get(p); // stati del NFA corrisp.
+    	    for (char ch : alphabet) { // considero tutte le possibili transizioni
+    		HashSet<Integer> qset = epsilonClosure(move(pset, ch));
+    		if (indexOfSet.containsKey(qset)) { // se qset non e` nuovo...
+    		    final int q = indexOfSet.get(qset); // recupero il suo indice
+    		    dfa.setMove(p, ch, q);          // aggiungo la transizione
+    		} else {                            // se invece qset e` nuovo
+    		    final int q = dfa.newState();   // creo lo stato nel DFA
+    		    indexOfSet.put(qset, q);        // aggiorno la corrispondenza
+    		    setOfIndex.put(q, qset);
+    		    newStates.push(q);              // q e` da visitare
+    		    dfa.setMove(p, ch, q);          // aggiungo la transizione
+    		}
+    	    }
+    	}
 
-        while (!newStates.empty()) { // finche' ci sono nuovi stati da visitare
-            final int p = newStates.pop(); // ne considero uno e lo visito
-            final HashSet<Integer> pset = setOfIndex.get(p); // stati del NFA corrisp.
-            for (char ch : alphabet) { // considero tutte le possibili transizioni
-                HashSet<Integer> qset = epsilonClosure(move(pset, ch));
-                if (indexOfSet.containsKey(qset)) { // se qset non e` nuovo...
-                    final int q = indexOfSet.get(qset); // recupero il suo indice
-                    dfa.setMove(p, ch, q);          // aggiungo la transizione
-                } else {                            // se invece qset e` nuovo
-                    final int q = dfa.newState();   // creo lo stato nel DFA
-                    indexOfSet.put(qset, q);        // aggiorno la corrispondenza
-                    setOfIndex.put(q, qset);
-                    newStates.push(q);              // q e` da visitare
-                    dfa.setMove(p, ch, q);          // aggiungo la transizione
-                }
-            }
-        }
+	// stabilisco gli stati finali del DFA
+    	for (int p = 0; p < dfa.numberOfStates(); p++)
+	    if (finalState(setOfIndex.get(p)))
+		dfa.addFinalState(p);
 
-        // stabilisco gli stati finali del DFA
-        for (int p = 0; p < dfa.numberOfStates(); p++) {
-            if (finalState(setOfIndex.get(p))) {
-                dfa.addFinalState(p);
-            }
-        }
-
-        return dfa;
+    	return dfa;
     }
-
+    
+    /**
+     * Calcola l'automa dfa con n+1 stati che riconosce le stringhe 0 e 1 
+     * tali che l'nesimo simbolo da dx sia 1
+     * @param n il numero di stai dell'nfa
+     * @return DFA equivalente con n+1 stati.
+     */
     public static NFA nth(int n) {
+        //DA IMPLEMENTARE 5.2
         NFA out = new NFA(n + 1);
         out.addMove(0, '1', 0);
         out.addMove(0, '0', 0);
@@ -319,6 +330,7 @@ public class NFA {
     }
 
     public void toDOT(String name) {
+        //DA IMPLEMENTARE 5.4
         String out = "digraph " + name + "{\n";
 
         out += "rankdir=LR;\n";
@@ -332,7 +344,9 @@ public class NFA {
 
         for (Move m : transitions.keySet()) {
             for (int i : transitions.get(m)) {
-                out += "q" + m.start + " -> q" + i + " [ label = \"" + m.ch + "\" ];\n";
+                if(m.ch == EPSILON)
+                    out += "q" + m.start + " -> q" + i + " [ label = \"" + "ɛ" + "\" ];\n";
+                else out += "q" + m.start + " -> q" + i + " [ label = \"" + m.ch + "\" ];\n";
             }
         }
 

@@ -6,10 +6,6 @@ package lft.sett2;
 
 import java.util.Scanner;
 
-/**
- *
- * @author Simone
- */
 public class esercizio3 {
     public static void main(String args[]){
         DFA dfa = new DFA(8);
@@ -62,6 +58,7 @@ public class esercizio3 {
         
         
         //scan
+        
         Scanner scan = new Scanner(System.in);
         String iao = scan.next();
         System.out.println(iao);

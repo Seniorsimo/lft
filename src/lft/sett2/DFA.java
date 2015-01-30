@@ -140,9 +140,10 @@ public class DFA
      *         <code>false</code> altrimenti.
      */
     public boolean scan(String s) {
-	// DA IMPLEMENTARE
+	// DA IMPLEMENTARE 2.2
         int index = 0;
-        int state = 0;
+        int state = 0;//state indica lo stao in cui ci troviamo al momento usando 
+                        //i caratteri della stringa s
         while(state>=0&&index<s.length()){
             state = move(state,s.charAt(index++));
         }
@@ -151,8 +152,11 @@ public class DFA
     
     /**
      * Restituisce true nel caso l'automa sia completo
+     * @return true se da ogni stato esce una transizione con ogni lettera 
+     * dell'alfabeto
      */
     public boolean complete(){
+        // DA IMPLEMENTARE 2.4
         boolean complete = true;
         HashSet alph = alphabet();
         int i=0;
@@ -167,16 +171,17 @@ public class DFA
 
     /**
      * Stampa una rappresentazione testuale dell'automa da
-     * visualizzare con <a href="http://www.graphviz.org">GraphViz</a>.
+     * visualizzare con <a href="http://graphviz-dev.appspot.com/">GraphViz</a>.
      * @param name Nome dell'automa.
      */
     public void toDOT(String name) {
+        // DA IMPLEMENTARE 2.5
 	String out = "digraph " + name + "{\n";
         
         out += "rankdir=LR;\n";
         out += "node [shape = doublecircle];\n";
         
-        for(Integer i : finalStates){
+        for(Integer i : finalStates){ //iniz. stati finali
             out += "q" + i + ";\n";
         }
         
@@ -184,11 +189,85 @@ public class DFA
         
         for(Move m :transitions.keySet()){
             out += "q" + m.start + " -> q" + transitions.get(m) + " [ label = \"" + m.ch + "\" ];\n";
-        }
+        } //q[stato di inizio mossa] -> q[valore associato alla mossa] [ label = \carattere di transizione
         
         out += "}";
         System.out.println(out);
     }
+    
+    
+    
+    public void toDOTMod(String name) {
+        //DA COMPLETARE 2.6
+        /**
+         * Inizializza il grafo
+         */
+        String output = "digraph " + name + "{\nrankdir=LR;\nnode[shape = doublecircle];\n";
+        /**
+         * Inserisce gli stati finali
+         */
+        for (Integer fin : this.finalStates) {
+            output += "q" + fin + ";\n";
+        }
+        /**
+         * Inserisce la forma del nodo
+         */
+        output += "node [shape = circle];\n";
+        /**
+         * Associa ad una mossa uno stato
+         */
+        HashMap<Move, Integer> tmp = new HashMap<Move, Integer>();
+        HashSet<Character> result;
+        /**
+         * cicla su tutte le mosse
+         */
+        for (Move move : transitions.keySet()) {
+            result = new HashSet<Character>();
+            /**
+             * se mossa gia' analizzata, salta iterazione
+             */
+            if (tmp.containsKey(move)) {
+                continue;
+            }
+            result.add(move.ch);
+            /**
+             * ri-cicla su tutte le mosse
+             */
+            for (Move mv : transitions.keySet()) {
+                /**
+                 * cicla e confronta se ci sono delle corrispondenze tra stato
+                 * di partenza e di arrivo
+                 */
+                if (move.start == mv.start && transitions.get(move) == transitions.get(mv)) {
+                    tmp.put(mv, transitions.get(mv));
+                    result.add(mv.ch);
+                }
+            }
+            /**
+             * aggiunge la nuova transizione al grafo
+             */
+            output += "q" + move.start + " -> q" + transitions.get(move) + " [ label = \"";
+            int j = 0;
+            /**
+             * Stampa i caratteri utilizzati dalla transizione sull'arco che
+             * connette due stati
+             */
+            for (Character c : result) {
+                if (j != 0) {
+                    output += "," + c;
+                } else {
+                    output += c;
+                    j++;
+                }
+            }
+            output += "\" ];\n";
+            tmp.put(move, transitions.get(move));
+        }
+        output += "}";
+        System.out.println(output);
+    }
+        
+    
 
     /**
      * Stampa una classe Java con un metodo <code>scan</code> che implementa 
@@ -196,6 +275,48 @@ public class DFA
      * @param name Nome della classe da generare.
      */
     public void toJava(String name) {
-	// DA IMPLEMENTARE
+	// DA IMPLEMENTARE 2.6
+        boolean init= false;
+        String out = "public class " + name + "{ \n\n";
+        
+        out += "        public static boolean Scan (String s) { \n\n" +
+               "            int state = 0; \n" +
+               "            int i = 0; \n\n";
+        
+        out += "            while (state >=0 && i<s.length()){ \n" +
+               "                final char ch = s.charAt(i++); \n\n" +
+               "                switch (state) { \n";
+        
+        for (int j=0; j< numberOfStates; j++){
+            out += "                    case "+ j+ ":\n";
+            for(Move m :transitions.keySet()){
+                if (m.start == j && init == false){
+                    out += "                    if (ch == " +  m.ch + ")\n "+ 
+                           "                        state = " + transitions.get(m) + ";\n";
+                    init = true;
+                } 
+                
+                else if (m.start == j && init == true){
+                    out += "                    else if (ch == " +  m.ch + ")\n "+ 
+                           "                        state = " + transitions.get(m) + ";\n";
+                }
+            }
+            out += "\n                    else state = -1;\n"+
+                   "                    break; \n\n";
+            init = false;
+            }
+        out += "                }\n             }\n";
+        
+        for(Integer i : finalStates){
+            out += "        return state == "+ i + "; \n    }\n\n";
+        }
+        
+        out +="     public static void main(String [] args){\n" +
+              "         System.out.println(Scan(args[0]) ? \"OK\" : \"NOPE\""
+                + ");\n"+
+              "     }\n"+
+              "}";
+        
+        System.out.println(out);
     }
 }

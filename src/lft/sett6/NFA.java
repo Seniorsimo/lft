@@ -331,7 +331,7 @@ public class NFA {
 
         for (Move m : transitions.keySet()) {
             for (int i : transitions.get(m)) {
-                out += "q" + m.start + " -> q" + i + " [ label = \"" + (m.ch!=NFA.EPSILON?m.ch:"") + "\" ];\n";
+                out += "q" + m.start + " -> q" + i + " [ label = \"" + (m.ch!=NFA.EPSILON?m.ch:"ɛ") + "\" ];\n";
             }
         }
 

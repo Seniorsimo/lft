@@ -5,10 +5,7 @@
  */
 package lft.sett6;
 
-/**
- *
- * @author simone
- */
+
 public class RegExpSymbol implements RegExp {
     private char ch;
 
