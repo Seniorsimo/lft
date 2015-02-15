@@ -1,13 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett4;
 
 /**
- *
- * @author simone
+ * Aggiungere un metodo equivalentTo alla classe DFA che determina se due DFA
+ * sono equivalenti (fare riferimento al libro di testo per la descrizione
+ * dell'algoritmo). Organizzare l'implementazione dell'algoritmo in modo da
+ * evitare la duplicazione di parti consistenti di codice nella classe DFA,
+ * eventualmente definendo opportuni metodi ausiliari privati.
+ * 
  */
 public class esercizio2 {
     public static void main(String[] args){

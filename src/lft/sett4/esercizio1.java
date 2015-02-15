@@ -1,10 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett4;
 
+/**
+ * Aggiungere un metodo minimize alla classe DFA che implementa l’algoritmo di
+ * minimizzazione (Tabella 2). Verificare il corretto funzionamento del metodo
+ * minimize su alcuni DFA appositamente costruiti. Nota: l'input dell'algoritmo
+ * in Tabella 2 e l'istanza di DFA su cui minimize viene invocato.
+ * In altri termini, minimize e un metodo di DFA senza argomenti.
+ * 
+ * @author simone
+ */
 public class esercizio1 {
     public static void main(String[] args){
         DFA in = new DFA(4);

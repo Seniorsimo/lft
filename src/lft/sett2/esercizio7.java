@@ -1,13 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett2;
 
 /**
- *
- * @author anna
+ * Aggiungere alla classe DFA un metodo toJava che accetta come argomento una
+ * stringa name e stampa la classe Java di nome name con un metodo scan che
+ * riconosce tutte e sole le stringhe accettate dall'automa, secondo lo schema
+ * visto in Sezione 1.
+ * 
  */
 public class esercizio7 {
     public static void main(String []args){
@@ -21,6 +19,8 @@ public class esercizio7 {
         tz.setMove(3, '1', 3);
         tz.setMove(3, '0', 3);
         tz.addFinalState(3);
+        
+        
         tz.toJava("trezeri");
     }
 }

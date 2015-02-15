@@ -1,11 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett2;
 
 import java.util.Scanner;
 
+/**
+ * Ripetere l’esercizio precedente con il DFA dell’esercizio 1.2.
+ * 
+ */
 public class esercizio3 {
     public static void main(String args[]){
         DFA dfa = new DFA(8);

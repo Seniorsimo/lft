@@ -1,13 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett6;
 
 /**
- *accetta tutte le combinazioni di a/b + la stringa vuota
- * @author anna
+ * Giustificare l’apparente stranezza del DFA ottenuto eseguendo l’istruzione:
+ * 
+ * Legge tutte e sole le stringhe formate da 'a' o da 'b' in un qualsiasi ordine
+ * e numero.
+ * 
  */
 public class esercizio3 {
     public static void main(String args[]){

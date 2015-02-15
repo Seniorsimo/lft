@@ -1,8 +1,6 @@
 package lft.sett5;
 
 
-
-
 /**
  * Un oggetto della classe <code>Move</code> rappresenta una mossa di
  * un automa a stati finiti, ovvero una coppia costituita da uno stato

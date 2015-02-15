@@ -1,10 +1,4 @@
-/*
- * Regexp Chioce serve a rappresentare la scelta '+'
- * 
- * 
- */
 package lft.sett6;
-
 
 public class RegExpChoice implements RegExp{
     private RegExp e1;

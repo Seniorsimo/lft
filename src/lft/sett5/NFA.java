@@ -186,7 +186,8 @@ public class NFA {
         for (int i : s) {
             HashSet temp = transitions.get(new Move(i, ch));
             
-                if (transitions.containsKey(temp))
+                //if (transitions.containsKey(temp))
+            if (temp!=null)
                 out.addAll(temp);
             
         }
@@ -217,37 +218,59 @@ public class NFA {
      * @see #epsilonClosure
      */    
     public HashSet<Integer> epsilonClosure(int p) {
-	// IMPLEMENTARE 5.2
+	// IMPLEMENTARE 5.1
         HashSet<Integer> closure = new HashSet<Integer>();
+        
+        //1 Allocare un vettore r di boolean con tanti elementi quanti sono gli
+        // stati dell'automa.
         boolean[] r = new boolean[this.numberOfStates];
         
+        //2 Inizializzare il vettore in modo tale che tutti gli elementi con
+        // indice diverso da q siano false e l'elemento con indice q sia true.
+
         for(int i = 0; i < this.numberOfStates; i++)
             r[i] = false;
-        r[p] = true; //per ora solo lo stato stesso è raggiunto con eps
+        r[p] = true;                                        //solo lo stato stesso è raggiunto con eps
         closure.add(p);
         
+        //3 Per ogni indice i tale che r[i] è true e ogni epsilon-transizione
+        // da i a j, si pone l'elemento r[j] a true.
         Move move;
         boolean bool = true;
         while(bool){
             bool = false;
-            for(int i = 0; i < this.numberOfStates; i++){ //tutti gli stati
-                move = new Move(i, EPSILON); //tutte le mosse epsilon con i
-                if(r[i] == true && this.transitions.get(move) != null){//se è e.closed e ha e-transizioni
-                    // insieme di stati raggiunti con la mossa (statoI - epsilon)
-                    HashSet<Integer> j = this.transitions.get(move);
-                    Iterator<Integer> it = j.iterator();
-                    // scorro tutte le destinazioni
-                    while(it.hasNext()){ //insieme di tutte le e.trans dallo stato
-                        int state = it.next();
-                        if(!closure.contains(state)){//se closure non ha ancora lo stato 
-                            r[state] = true; //segno che lo aggiungo e che è e.closed per poterlo esplorare al prossimo giro
-                            closure.add(state); //lo aggiungo all'hashsetdei raggiunti con epsilon
-                            bool = true; //ho fatto qualcosa
+            for(int i = 0; i < this.numberOfStates; i++){               //per ogni indice i
+                if(r[i] == true){                                       //tale che r[i] è true
+                    move = new Move(i, EPSILON);                        //e ogni epsilon-trantizione
+                    if(this.transitions.get(move) != null){             //(se esiste)
+                        
+                        // insieme di stati raggiunti con la mossa (statoI - epsilon)
+                        HashSet<Integer> j = this.transitions.get(move);
+                        Iterator<Integer> it = j.iterator();
+                        
+                        // scorro tutte le destinazioni
+                        while(it.hasNext()){
+                            int state = it.next();
+                            if(!closure.contains(state)){               //se closure non ha ancora lo stato 
+                                r[state] = true;                        //si pone l'elemento r[j] a true.
+                                closure.add(state);                     //lo aggiungo all'hashsetdei raggiunti con epsilon
+                                bool = true;                            //ho fatto qualcosa
+                            }
                         }
                     }
                 }
             }
         }
+        
+        //4 Ripetere il passo precedente fintantoche vengono scoperti nuovi stati
+        // raggiungibili da q per mezzo di epsilon-transizioni
+        //Al fine si è aggiunto il while più esterno
+        
+        //5 Allocare e ritornare una istanza s della classe HashSet<Integer>
+        // contenente tutti e soli gli indici i del vettore r tali che r[i] è true.
+        //Aggiunto nel ciclo per evitare ulteriori loop
+
+        
         return closure;
     }
     
@@ -299,14 +322,18 @@ public class NFA {
     	return dfa;
     }
     
+    
+    
     /**
-     * Calcola l'automa dfa con n+1 stati che riconosce le stringhe 0 e 1 
+     * Calcola l'automa nfa con n+1 stati che riconosce le stringhe 0 e 1 
      * tali che l'nesimo simbolo da dx sia 1
      * @param n il numero di stai dell'nfa
-     * @return DFA equivalente con n+1 stati.
+     * @return NFA equivalente con n+1 stati.
      */
     public static NFA nth(int n) {
         //DA IMPLEMENTARE 5.2
+        
+        //Creo un nuovo NFA con n+1
         NFA out = new NFA(n + 1);
         out.addMove(0, '1', 0);
         out.addMove(0, '0', 0);

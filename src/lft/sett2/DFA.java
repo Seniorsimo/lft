@@ -141,9 +141,13 @@ public class DFA
      */
     public boolean scan(String s) {
 	// DA IMPLEMENTARE 2.2
+        
+        // Inizializzazione delle variabili
         int index = 0;
-        int state = 0;//state indica lo stao in cui ci troviamo al momento usando 
-                        //i caratteri della stringa s
+        int state = 0;  // state indica lo stato in cui ci troviamo al momento
+                        // usando i caratteri della stringa s
+        // per ogni caratte della stringa eseguo una transazione partendo dallo
+        // stato corrente. Nel caso una transazione ritorni un errore mi fermo.
         while(state>=0&&index<s.length()){
             state = move(state,s.charAt(index++));
         }
@@ -157,6 +161,10 @@ public class DFA
      */
     public boolean complete(){
         // DA IMPLEMENTARE 2.4
+        
+        // Partendo dal presupposto che sia completo, mi basta trovare uno stato
+        // con almeno una transazione per un simbolo dell'alfabeto non definita
+        // per dire che è incompleto
         boolean complete = true;
         HashSet alph = alphabet();
         int i=0;

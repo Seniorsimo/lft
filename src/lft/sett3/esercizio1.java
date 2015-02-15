@@ -1,12 +1,15 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett3;
 
-import java.util.HashSet;
-
+/**
+ * Aggiungere un metodo reach alla classe DFA che implementa l’algoritmo di 
+ * raggiungibilita (Tabella 1). Usare il metodo reach per implementare:
+ * • un metodo empty che ritorna true se e solo se l’automa riconosce il
+ * linguaggio vuoto.
+ * • un metodo sink che ritorna l’insieme degli stati pozzo dell’automa.
+ * Testare il corretto funzionamento dei metodi reach, empty e sink su alcuni
+ * DFA appositamente costruiti.
+ * 
+ */
 public class esercizio1 {
     public static void main(String[] args){
         DFA dfa = new DFA(5);
@@ -29,22 +32,14 @@ public class esercizio1 {
         //3
         dfa.setMove(3, '0', 3);
         dfa.setMove(3, '1', 3);
-        
-        
-//scan
 
-        DFA Edfa = new DFA(0);
+        DFA Edfa = new DFA(1);
         dfa.toDOT("dfa");
-//        HashSet temp = dfa.reach(0);
-//        for(Object i : temp){
-//            System.out.println((Integer)i + "");
-//        }
+        Edfa.toDOT("Edfa");
+        
         System.out.println(dfa.reach(0));
         System.out.println(dfa.empty());
         System.out.println(Edfa.empty());
         System.out.println(dfa.sink());
-        
-        
-
     }
 }

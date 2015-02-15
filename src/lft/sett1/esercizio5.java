@@ -1,14 +1,35 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett1;
 
 import java.util.Scanner;
-import static lft.sett1.esercizio1.scan;
 
-
-public class esercizio5 { //binario %3==0
+/**
+ * (opzionale). Progettare e implementare un DFA che riconosca il linguaggio dei
+ * numeri binari (stringhe di 0 e 1) il cui valore e multiplo di 3. Per esempio,
+ * 110 e 1001 sono stringhe del linguaggio (rappresentano rispettivamente i
+ * numeri 6 e 9), mentre 10 e 111 no (rappresentano rispettivamente i numeri 2
+ * e 7). Suggerimento: usare tre stati per rappresentare il resto della
+ * divisione per 3 del numero.
+ * 
+ * Prendiamo 4 stati: iniziale e uno per ogni resto possibile della divisione
+ * per 3 del numero binario che andiamo a leggere, proseguiamo ragionando
+ * come segue. (s1: resto 0, s2: resto 1, s3: resto 2)
+ * Dallo stato iniziale (resto 0) possiamo passare agli stati:
+ * s1 se leggiamo uno 0 (0%3 = 0)
+ * s2 se leggiamo un 1 (1%3 = 1)
+ * Ora lo stato 1 deve essere finale (resto 0 appunto), ma la stringa potrebbe
+ * non essere finita, abbiamo quindi
+ * s1 se leggiamo un ulteriore 0 (significa moltiplicare per 2 il numero letto
+ * precedentemente e quindi raddoppiare anche il resto 0*2 = 0)
+ * s2 se leggiamo un ulteriore 1 (raddoppio e aggiungo 1 al numero precedente
+ * e quindi anche al resto 0*2 + 1 = 1)
+ * Con lo stesso ragionamento controlliamo lo stato s2
+ * s3 se leggo uno 0 ( 1*2 = 2)
+ * s1 se leggo un 1 ( 1*2 + 1 = 3 = 0 )
+ * Mentre per s3
+ * s2 se leggo uno 0 ( 2*2 = 4 = 1)
+ * s3 se leggo un 1 ( 2*2 + 1 = 5 = 2 )
+ */
+public class esercizio5 {
 
     public static boolean scan(String s) {
         int state = 0;
@@ -55,7 +76,6 @@ public class esercizio5 { //binario %3==0
             }
         }
         return state == 1;
-        //return state != -1 && state < 3;
     }
 
     public static void main(String[] args) {

@@ -1,15 +1,18 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett1;
 
 import java.util.Scanner;
-import static lft.sett1.esercizio1.scan;
 
 /**
- *
- * @author Simone
+ * (opzionale). Progettare e implementare un DFA che riconosca il linguaggio
+ * degli identificatori in un linguaggio in stile Java: un identificatore e una
+ * sequenza non vuota di lettere, numeri, ed il simbolo di sottolineatura _ che
+ * non comincia con un numero e che non può essere composto solo da un _.
+ * 
+ * Trattandosi di una sequenza non vuota sono necessari minimo 2 stati.
+ * Da S0 dobbiamo distinguere 2 casi: inisio per _ o con lettera.
+ * Nel primo caso passo ad uno stato che non può essere finale, devo leggere
+ * almeno un altro simbolo (qualsiasi) raggiungendo lo stato finale;
+ * nel secondo caso invece raggiungo lo stato finale direttamente.
  */
 public class esercizio4 {
 
@@ -53,7 +56,6 @@ public class esercizio4 {
             }
         }
         return state == 1;
-        //return state != -1 && state < 3;
     }
 
     public static void main(String[] args) {

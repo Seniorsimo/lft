@@ -1,15 +1,14 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett5;
 
 import java.util.HashSet;
 
 /**
- *
- * @author anna
+ * Implementare tutti i metodi incompleti della classe NFA mostrata nel Listato
+ * 3. Per l'implementazione del metodo epsilonClosure fare riferimento
+ * all'algoritmo in Tabella 3. Verificare il funzionamento del metodo dfa su
+ * alcune istanze di NFA rappresentanti automi non deterministici, alcuni con
+ * ed altri senza epsilon-transizioni.
+ * 
  */
 public class esercizio1 {
     public static void main(String[] args) {

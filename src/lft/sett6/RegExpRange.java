@@ -1,21 +1,16 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett6;
 
 /**
- *
- * @author anna
+ * NOTA: Il metodo comile delega alle altre classi la realizzazione della scelta
+ * e non richiama eslicitamente il 'new NFA()' in quanto in tutti i casi l'NFA
+ * restituito dal metodo invcato è già correttamente formato: in questo modo si
+ * evita di appesantire l'NFA finale riducendone gli stati e le epsilon-transizioni.
+ * 
  */
-
-
 public class RegExpRange implements RegExp{
     //DA COMPLETARE 6.4
-    
-    private int s1;
-    private int s2;
+    private char s1;
+    private char s2;
     
     public RegExpRange(char from, char to) {
 	this.s1 = from;
@@ -24,14 +19,19 @@ public class RegExpRange implements RegExp{
 
     @Override
     public NFA compile() {
-        if((s1-s2) == 0){ //se from e to sono lo stesso simbolo
-            return new RegExpSymbol((char)s2).compile();
-        } else {
-            int x = s1+1;
-            char tmp = (char) x; //carattere successivo nella tavola dei caratteri
-            return new RegExpChoice(
-                    new RegExpSymbol((char)s1),
-                    new RegExpRange(tmp, (char)s2)
+        if(s1>s2){                                          //nel caso l'ordine sia invertito scambio i char
+            char t = s1;
+            s1 = s2;
+            s2 = t;
+        }
+        if((s1-s2) == 0){                                   //se from e to sono lo stesso simbolo
+            return new RegExpSymbol((char)s2).compile();    //genero l'NFA contenente solo quel simbolo
+            
+        } else {                                            //altriemnti risolvo ricorsivamente
+            char x = (char)(s1+1);                          //calcolo il carattere successivo
+            return new RegExpChoice(                        //ritorno una nuova scelata formata
+                    new RegExpSymbol((char)s1),             //dal primo simbolo e
+                    new RegExpRange(x, (char)s2)            //dal range che va da x a s2
             ).compile();
         }
         

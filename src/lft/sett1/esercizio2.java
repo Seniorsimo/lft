@@ -1,13 +1,21 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett1;
 
 import java.util.Scanner;
-import static lft.sett1.esercizio1.scan;
 
-
+/**
+ * Progettare un DFA che riconosca il linguaggio delle costanti numeriche in
+ * virgola mobile. Esempi di tali costanti sono:
+ * 123 123.5 .567 +7.5 -.7 67e10 1e-2 -.7e2
+ * 
+ * Realizzare il DFA in Java seguendo la costruzione vista in Figura 2,
+ * assicurarsi che l’implementazione riconosca il linguaggio desiderato.
+ * 
+ * In base al particolare stato finale in cui si trova l’automa al termine del
+ * riconoscimento, cosa si puo dire della costante numerica riconosciuta? 
+ * Si può distinguere fra numeri senza parte decimale (stato 2), con parte
+ * decimale (stato 4), con parte esponenziale (stato7, con o senza parte
+ * decimale)
+ */
 public class esercizio2 {
 
     public static boolean scan(String s) {
@@ -96,7 +104,6 @@ public class esercizio2 {
             }
         }
         return state == 2 || state == 4 || state == 7;
-        //return state != -1 && state < 3;
     }
 
     public static void main(String[] args) {

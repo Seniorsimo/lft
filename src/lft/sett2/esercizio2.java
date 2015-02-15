@@ -1,14 +1,15 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett2;
 
 import java.util.Scanner;
 
 /**
- *
- * dfa che riconosce stringhe con 3 0 consecutivi
+ * Aggiungere alla classe DFA un metodo scan che accetta una stringa s e ritorna
+ * true se s e riconosciuta dall’automa, false altrimenti. Scrivere un semplice
+ * programma di prova che crea una istanza della classe DFA, costruisce la
+ * rappresentazione del DFA mostrato in Figura 1, e verifica se una stringa
+ * data in input (passata dalla linea di comando o letta da tastiera) e o meno
+ * riconosciuta dall’automa. 
+ * 
  */
 public class esercizio2 {
     public static void main(String args[]){

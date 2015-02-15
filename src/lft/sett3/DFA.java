@@ -1,7 +1,6 @@
 package lft.sett3;
 
 
-import lft.sett2.*;
 import java.util.HashSet;
 import java.util.HashMap;
 
@@ -142,8 +141,13 @@ public class DFA
      */
     public boolean scan(String s) {
 	// DA IMPLEMENTARE 2.2
+        
+        // Inizializzazione delle variabili
         int index = 0;
-        int state = 0;
+        int state = 0;  // state indica lo stato in cui ci troviamo al momento
+                        // usando i caratteri della stringa s
+        // per ogni caratte della stringa eseguo una transazione partendo dallo
+        // stato corrente. Nel caso una transazione ritorni un errore mi fermo.
         while(state>=0&&index<s.length()){
             state = move(state,s.charAt(index++));
         }
@@ -157,6 +161,10 @@ public class DFA
      */
     public boolean complete(){
         // DA IMPLEMENTARE 2.4
+        
+        // Partendo dal presupposto che sia completo, mi basta trovare uno stato
+        // con almeno una transazione per un simbolo dell'alfabeto non definita
+        // per dire che è incompleto
         boolean complete = true;
         HashSet alph = alphabet();
         int i=0;
@@ -181,7 +189,7 @@ public class DFA
         out += "rankdir=LR;\n";
         out += "node [shape = doublecircle];\n";
         
-        for(Integer i : finalStates){
+        for(Integer i : finalStates){ //iniz. stati finali
             out += "q" + i + ";\n";
         }
         
@@ -189,11 +197,85 @@ public class DFA
         
         for(Move m :transitions.keySet()){
             out += "q" + m.start + " -> q" + transitions.get(m) + " [ label = \"" + m.ch + "\" ];\n";
-        }
+        } //q[stato di inizio mossa] -> q[valore associato alla mossa] [ label = \carattere di transizione
         
         out += "}";
         System.out.println(out);
     }
+
+    
+    
+    public void toDOTMod(String name) {
+        //DA COMPLETARE 2.6
+    /**
+         * Inizializza il grafo
+         */
+        String output = "digraph " + name + "{\nrankdir=LR;\nnode[shape = doublecircle];\n";
+        /**
+         * Inserisce gli stati finali
+         */
+        for (Integer fin : this.finalStates) {
+            output += "q" + fin + ";\n";
+        }
+        /**
+         * Inserisce la forma del nodo
+         */
+        output += "node [shape = circle];\n";
+        /**
+         * Associa ad una mossa uno stato
+         */
+        HashMap<Move, Integer> tmp = new HashMap<Move, Integer>();
+        HashSet<Character> result;
+        /**
+         * cicla su tutte le mosse
+         */
+        for (Move move : transitions.keySet()) {
+            result = new HashSet<Character>();
+            /**
+             * se mossa gia' analizzata, salta iterazione
+             */
+            if (tmp.containsKey(move)) {
+                continue;
+            }
+            result.add(move.ch);
+            /**
+             * ri-cicla su tutte le mosse
+             */
+            for (Move mv : transitions.keySet()) {
+                /**
+                 * cicla e confronta se ci sono delle corrispondenze tra stato
+                 * di partenza e di arrivo
+                 */
+                if (move.start == mv.start && transitions.get(move) == transitions.get(mv)) {
+                    tmp.put(mv, transitions.get(mv));
+                    result.add(mv.ch);
+                }
+            }
+            /**
+             * aggiunge la nuova transizione al grafo
+             */
+            output += "q" + move.start + " -> q" + transitions.get(move) + " [ label = \"";
+            int j = 0;
+            /**
+             * Stampa i caratteri utilizzati dalla transizione sull'arco che
+             * connette due stati
+             */
+            for (Character c : result) {
+                if (j != 0) {
+                    output += "," + c;
+                } else {
+                    output += c;
+                    j++;
+                }
+            }
+            output += "\" ];\n";
+            tmp.put(move, transitions.get(move));
+        }
+        output += "}";
+        System.out.println(output);
+    }
+        
+    
 
     /**
      * Stampa una classe Java con un metodo <code>scan</code> che implementa 
@@ -238,12 +320,12 @@ public class DFA
         }
         
         out +="     public static void main(String [] args){\n" +
-              "         System.out.println(Scan(args[0]) ? \"OK\" : \"NOPE\");\n"+
+              "         System.out.println(Scan(args[0]) ? \"OK\" : \"NOPE\""
+                + ");\n"+
               "     }\n"+
               "}";
         
         System.out.println(out);
-    
     }
     
     /**
@@ -253,39 +335,41 @@ public class DFA
      */
     public HashSet<Integer> reach(int input){
         // DA IMPLEMENTARE 3.1
-        if (numberOfStates==0) return null; //GESTISCE IL DFA VUOTO
+        
+        HashSet<Integer> result = new HashSet<>();
+        if(numberOfStates==0) return result;
+        
+        // creo un array di booleani indicanti la raggiungibilità
         boolean[] r = new boolean[numberOfStates];
         for(boolean b:r) b = false; //tutto a false
         r[input] = true; //lo stato di partenza è true
         
+        //inizializzo le variabili del ciclo di analisi
+        int i = 0;                      //stato analizzato
+        boolean modificato = false;     //indica se sono state apportate modifiche
         
-        int i = 0;
-        boolean modificato = false;
-        /*cicla finchè modifichi qualcosa*/
-                /*i < numberOfStates*/
+        /* Bisonga ciclare finchè si modifica qualcosa */
         do{
-            
-            if(r[i]){//se r[i] è raggiungibile
-                for(Move m:transitions.keySet()){ //cicla tutte le mosse possibili
+            if(r[i]){                                           //se r[i] è raggiungibile
+                for(Move m:transitions.keySet()){               //cicla tutte le mosse possibili
                     if(m.start == i && !r[transitions.get(m)]){ //prendi quelle che interessano
-                        r[transitions.get(m)] = true; //se non era ancora a true mettilo a true
-                        modificato = true;
-                        
+                        r[transitions.get(m)] = true;           //lo stato è raggiungibile
+                        modificato = true;                      //ho effettuato una modifica
                     }
                 }
             }
             i++;
-            if(i==numberOfStates&&modificato==true){ //se sono alla fine ma ho fatto modifiche
-                modificato = false;//continua a ciclare 
-                i = 0;//resetta
+            if(i==numberOfStates&&modificato==true){            //se sono alla fine e ho fatto modifiche
+                modificato = false;                             //continua a ciclare 
+                i = 0;                                          //resettando l'indice
             }
         }
         while(i<numberOfStates);
         
-        HashSet<Integer> result = new HashSet<>();
+        //creo un hashSet contenente i risultati
+        
         for(int ii=0; ii<r.length; ii++){
             if(r[ii]){
-                
                 result.add(ii);
             }
         }
@@ -294,79 +378,95 @@ public class DFA
     }
     
     /**
-     * Controlla se il DFA è vuoto
+     * Ritorna true se l'autoa riconosc eil linguaggio vuoto
      * 
-     * @return true se reach(start) non contiene stati finali
+     * @return true se reach(start) è vuoto o contiene solo se stesso
      */
     public boolean empty(){
         //DA IMPLEMENTARE 3.1
-        HashSet temp = reach(0);
-        if (temp== null)
-            return true;
-        return false;
+        HashSet<Integer> l = reach(0);
+        
+        return l.isEmpty() || (l.size() == 1 && l.contains(0));
     }
     
     
     /**
-     * Controlla se il DFA è pozzo
-     * uno stato è pozzo se da esso non escono transizioni verso altri stati
+     * Ritorna l'insieme degli stati pozzo dell'automa
+     * 
      * @return l'insieme stati pozzo
      */
     public HashSet<Integer> sink() {
         //DA IMPLEMENTARE 3.1
         HashSet<Integer> out = new HashSet<>();
+        
+        //verifico per ogni stato la raggiungibilitaà di uno stato finale
         for (int i = 0; i < numberOfStates; i++) {
-            if (!finalStates.contains(i) && reach(i).size() == 1) { //se non è finale ma raggiunge solo sè stesso
-                out.add(i);//allora è pozzo
+
+            HashSet<Integer> reachable = reach(i);      // stati raggiungibili
+            boolean pozzo = true;
+            
+            for (Integer finalstate : finalStates) {    // per ogni sato finale
+                if (reachable.contains(finalstate)) {   // guardo se è presente negli stati raggiunti
+                    pozzo = false;                       // se si lo stato analizzato non è pozzo
+                }
+            }
+            
+            if (pozzo) {    // se lo stato è pozzo lo aggiungo
+                out.add(i);
             }
         }
         return out;
     }
     
     /**
-     * Controlla se lo stato è raggiungibile dallo stato iniziale e si memorizza 
-     * una striga usata per arrivarci
+     * samples ritorna un insieme di stringhe campione
+     * accettate dall'automa, una per ogni stato finale dell'automa.
      * @param input stato di partenza
      * @return <code>HashSet<Integer> result </code> insieme degli stati raggiunti da input
      */
     public HashSet<StateWithExample> samples(int input){
         //DA IMPLEMENTARE 3.2
+        HashSet<StateWithExample> result = new HashSet<>();
+        if(numberOfStates==0) return result;
+        
+        // creo un array di booleani indicanti la raggiungibilità
         boolean[] r = new boolean[numberOfStates];
-        String[] s = new String[numberOfStates];//stringa di supporto con i caratteri
-        for(int i=0; i<numberOfStates; i++){
+        
+        //stringa di supporto con i caratteri
+        String[] s = new String[numberOfStates];
+        
+        for(int i=0; i<numberOfStates; i++){    //tutto a false
             r[i] = false;
             s[i] = "";
         }
-        r[input] = true;
+        r[input] = true;                        //lo stato di partenza è true
         
+        //inizializzo le variabili del ciclo di analisi
+        int i = 0;                      //stato analizzato
+        boolean modificato = false;     //indica se sono state apportate modifiche
         
-        int i = 0;
-        boolean modificato = false;
-        /*cicla finchè modifichi qualcosa*/
-                /*i < numberOfStates*/
+        /* Bisonga ciclare finchè si modifica qualcosa */
         do{
-            
-            if(r[i]){
-                for(Move m:transitions.keySet()){
-                    if(m.start == i && !r[transitions.get(m)]){//ci interessa e non è ancora stato inizializzato
-                        r[transitions.get(m)] = true;
-                        s[transitions.get(m)] = s[i] + " " + m.ch; //aggiungo il carattere alla stringa dello stato
-                        modificato = true;
-                        
+            if(r[i]){                                               //se r[i] è raggiungibile
+                for(Move m:transitions.keySet()){                   //cicla tutte le mosse possibili
+                    if(m.start == i && !r[transitions.get(m)]){     //prendi quelle che interessano
+                        r[transitions.get(m)] = true;               //lo stato è raggiungibile
+                        s[transitions.get(m)] = s[i] + " " + m.ch;  //aggiungo il carattere alla stringa dello stato
+                        modificato = true;                          //ho effettuato una modifica
                     }
                 }
             }
             i++;
-            if(i==numberOfStates&&modificato==true){
-                modificato = false;
-                i = 0;
+            if(i==numberOfStates&&modificato==true){            //se sono alla fine e ho fatto modifiche
+                modificato = false;                             //continua a ciclare 
+                i = 0;                                          //resettando l'indice
             }
         }
         while(i<numberOfStates);
         
-        HashSet<StateWithExample> result = new HashSet<>();
+        // per ogni stato raggiunto, se è finale lo inserisco nel risultato con la stringa calcolata
         for(int ii=0; ii<r.length; ii++){
-            if(r[ii]){
+            if(r[ii] && finalStates.contains(ii)){
                 //creo un insieme di int(stato) e string associata
                 result.add(new StateWithExample(ii, s[ii]));
             }

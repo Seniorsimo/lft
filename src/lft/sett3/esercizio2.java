@@ -1,13 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett3;
 
 /**
- *stampa gli stati raggiunti dal parametro + una stringa che li raggiunge
- * @author anna
+ * Implementare un metodo samples che ritorna un insieme di stringhe campione
+ * accettate dall'automa, una per ogni stato finale dell'automa.
+ * Suggerimento: La struttura del metodo samples e fondamentalmente identica a
+ * quella del metodo reach: basta raffinare l'algoritmo di raggiungibilita in
+ * modo da tenere traccia, per ogni stato p raggiungibile dallo stato iniziale
+ * q0 dell'automa, di un esempio di stringa w che consente di raggiungere p da
+ * q0, ovvero tale che ˆδ(q0, w) = p.
+ * Per fare cio, cambiare il vettore r in modo che contenga stringhe invece
+ * che boolean e in questo vettore usare il valore null invece che false per
+ * marcare gli stati irraggiungibili.
+ * 
  */
 public class esercizio2 {
 

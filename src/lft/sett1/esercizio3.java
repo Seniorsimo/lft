@@ -1,13 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package lft.sett1;
 
 import java.util.Scanner;
-import static lft.sett1.esercizio1.scan;
 
-
+/**
+ * (opzionale) Modificare l’automa dell’esercizio precedente in modo che
+ * riconosca costanti numeriche precedute e/o seguite da sequenze eventualmente
+ * vuote di spazi. Modificare l’implementazione Java dell’automa conseguentemente.
+ * 
+ * L'automa è stato modificato aggiungendo uno stato 8 e 5 transazioni per " ":
+ * da 0 a 0 per leggere gli spazi in testa alla costante
+ * da 2 a 8, da 4 a 8 e da 7 a 8 per il primo spazio in coda
+ * da 8 a 8 per i successivi spazi
+ */
 public class esercizio3 {
 
     public static boolean scan(String s) {
@@ -111,7 +115,6 @@ public class esercizio3 {
             }
         }
         return state == 2 || state == 4 || state == 7 || state == 8;
-        //return state != -1 && state < 3;
     }
 
     public static void main(String[] args) {

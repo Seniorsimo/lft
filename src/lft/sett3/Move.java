@@ -1,7 +1,5 @@
 package lft.sett3;
 
-import lft.sett2.*;
-
 
 /**
  * Un oggetto della classe <code>Move</code> rappresenta una mossa di

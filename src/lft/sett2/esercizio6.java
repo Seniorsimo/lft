@@ -9,7 +9,7 @@ package lft.sett2;
  * http://graphviz-dev.appspot.com
  * 
  */
-public class esercizio5 {
+public class esercizio6 {
     public static void main(String args[]){
         DFA dfa = new DFA(4);
         
@@ -32,9 +32,8 @@ public class esercizio5 {
         dfa.setMove(3, '0', 3);
         dfa.setMove(3, '1', 3);
         
-        
-        // print
-        dfa.toDOT("prova");
+        //print
+        dfa.toDOTMod("provamod");
 
     }
 }
