@@ -547,17 +547,17 @@ public class DFA {
     int[] m = new int[numberOfStates];
         int k = -1;
         for (int i = 0; i < numberOfStates; i++) {
-    for (int j = 0; j < numberOfStates; j++) {
-                // prende la prima j sulla colonna che, incrociato con i, ha valore true(indistinguibile)
-                if (eq[i][j]) {
-                    m[i] = j; //nell'array di costruzione mettiamo j nella posizione i
-                    if (j > k) {
-                        k = j; //num. stati da costruire
+            for (int j = 0; j < numberOfStates; j++) {
+                        // prende la prima j sulla colonna che, incrociato con i, ha valore true(indistinguibile)
+                        if (eq[i][j]) {
+                            m[i] = j; //nell'array di costruzione mettiamo j nella posizione i
+                            if (j > k) {
+                                k = j; //num. stati da costruire
+                        }
+                        break;
+                    }
                 }
-                break;
             }
-        }
-    }
         
         //6 Sia k l'elemento piu grande del vettore m. Allocare e inizializzare
         // un DFA B con k + 1 stati e tale che per ogni transizione da i a j
@@ -568,7 +568,7 @@ public class DFA {
         for (int i = 0; i < numberOfStates; i++) {                  //per ogni transazione da i
         itAlfabeto = alfabeto.iterator();
         while (itAlfabeto.hasNext()) {
-                char ch = itAlfabeto.next();                        //etichettata ch
+            char ch = itAlfabeto.next();                        //etichettata ch
             move = new Move(i, ch);
                 if (transitions.get(move) != null) {                //(se esiste)
                     b.setMove(m[i], ch, m[transitions.get(move)]);  //aggiungo una transazione da m[i] a m[j] etichetata ch
